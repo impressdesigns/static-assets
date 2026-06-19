@@ -42,22 +42,6 @@ file = "icons/icon.svg"
   height = 32
   file = "icon-32.png"
 
-  # Reversed icon for dark surfaces: drop the square, keep the white monogram.
-  [[asset.output]]
-  format = "png"
-  width = 512
-  height = 512
-  file = "icon-512-white.png"
-  colors = { background = "none", monogram = "#ffffff" }
-
-  # Black icon to match the brand guide's black lockup.
-  [[asset.output]]
-  format = "png"
-  width = 512
-  height = 512
-  file = "icon-512-black.png"
-  colors = { background = "#000000", monogram = "#ffffff" }
-
 [[asset]]
 name = "Full logo lockup"
 description = "Full ID wordmark lockup. Colour variants recolour the background, monogram, and wordmark layers at build time."

@@ -42,8 +42,8 @@ Colour variants are produced at build time rather than as separate files: the
 renderer swaps that `<style>` block using the per-output `colors` map in
 `assets.toml`. The full lockup ships in three variants — colour (`#264583` square
 and wordmark), white (every layer white with `background` set to `none` to drop
-the square, for dark surfaces), and black — and the icon adds matching white and
-black variants alongside its default-colour favicons.
+the square, for dark surfaces), and black. The icon ships only its
+default-colour favicons (512, 192, 180, and 32px).
 
 ## Updating the logo
 
