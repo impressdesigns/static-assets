@@ -1,0 +1,6 @@
+/* Impress Designs brand tokens.
+ * Consume these custom properties instead of hard-coding hex values. */
+:root {
+  /* Brand blue — Pantone 7687 */
+  --color-brand-blue: #264583;
+}
