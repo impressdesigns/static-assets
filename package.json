@@ -5,9 +5,7 @@
   "description": "Impress Designs company branding.",
   "type": "module",
   "scripts": {
-    "build": "npm run build:assets && npm run build:index",
-    "build:assets": "node scripts/build-assets.mjs",
-    "build:index": "node scripts/build-index.mjs"
+    "build": "python3 scripts/build.py"
   },
   "devDependencies": {
     "sharp": "^0.33.5"

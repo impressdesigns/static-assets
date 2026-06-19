@@ -1,0 +1,60 @@
+# assets.toml — declarative manifest for the branding build.
+#
+# Each [[asset]] names a source file under source/. The orchestrator
+# (scripts/build.py) copies it verbatim into dist/ at the same relative path,
+# then produces each [[asset.output]] alongside the copy by shelling out to
+# scripts/render.mjs.
+#
+# The output schema is intentionally loose: keys under [[asset.output]] are
+# forwarded as JSON to the renderer, which owns all rasterization semantics
+# (sharp). `file` is the output filename (no directory); it lands next to the
+# copied source. `colors` maps a semantic CSS class in the SVG to a fill
+# ("none" hides that layer). An asset with no [[asset.output]] tables is copied
+# verbatim with no render step (e.g. a stylesheet would just be a bare [[asset]]
+# with no outputs).
+
+[[asset]]
+name = "App icon"
+description = "Square monogram icon used for favicons, PWA, and touch icons."
+file = "icons/icon.svg"
+
+  [[asset.output]]
+  format = "png"
+  width = 512
+  height = 512
+  file = "icon-512.png"
+
+  [[asset.output]]
+  format = "png"
+  width = 192
+  height = 192
+  file = "icon-192.png"
+
+  [[asset.output]]
+  format = "png"
+  width = 180
+  height = 180
+  file = "icon-180.png"
+
+  [[asset.output]]
+  format = "png"
+  width = 32
+  height = 32
+  file = "favicon-32.png"
+
+[[asset]]
+name = "Full logo lockup"
+description = "Full ID wordmark lockup. Colour variants recolour the background, monogram, and wordmark layers at build time."
+file = "logos/logo-full.svg"
+
+  [[asset.output]]
+  format = "png"
+  width = 491
+  file = "logo-full-dark.png"
+  colors = { background = "#2b4287", monogram = "#ffffff", wordmark = "#2b4287" }
+
+  [[asset.output]]
+  format = "png"
+  width = 491
+  file = "logo-full-white.png"
+  colors = { background = "none", monogram = "#ffffff", wordmark = "#ffffff" }
