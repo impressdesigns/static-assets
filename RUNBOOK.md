@@ -106,8 +106,6 @@ Then spot-check `dist/`:
 
 - `dist/logos/logo-full-color.png` — `#264583` square, white monogram, and the
   whole wordmark (IMPRESS **and** DESIGNS) in the same blue.
-- `dist/logos/logo-full-white.png` — square dropped, everything white.
-- `dist/logos/logo-full-black.png` — black square and wordmark, white monogram.
 - `dist/icons/icon-512.png` — blue square, white monogram, **square crop** (no
   wordmark whitespace). If there's letterbox space, the icon viewBox wasn't
   tightened in Step 1b.
