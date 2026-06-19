@@ -44,7 +44,7 @@ file = "icons/icon.svg"
 
 [[asset]]
 name = "Full logo lockup"
-description = "Full ID wordmark lockup. Colour variants recolour the background, monogram, and wordmark layers at build time."
+description = "Full ID wordmark lockup. The background, monogram, and wordmark layers can be recoloured at build time via the per-output colors map."
 file = "logos/logo-full.svg"
 
   [[asset.output]]
@@ -52,15 +52,3 @@ file = "logos/logo-full.svg"
   width = 491
   file = "logo-full-color.png"
   colors = { background = "#264583", monogram = "#ffffff", wordmark = "#264583" }
-
-  [[asset.output]]
-  format = "png"
-  width = 491
-  file = "logo-full-white.png"
-  colors = { background = "none", monogram = "#ffffff", wordmark = "#ffffff" }
-
-  [[asset.output]]
-  format = "png"
-  width = 491
-  file = "logo-full-black.png"
-  colors = { background = "#000000", monogram = "#ffffff", wordmark = "#000000" }

@@ -38,12 +38,11 @@ renders the full-colour version when the file is viewed directly.
 
 The entire wordmark — IMPRESS, DESIGNS, and the ® — is a single colour.
 
-Colour variants are produced at build time rather than as separate files: the
-renderer swaps that `<style>` block using the per-output `colors` map in
-`assets.toml`. The full lockup ships in three variants — colour (`#264583` square
-and wordmark), white (every layer white with `background` set to `none` to drop
-the square, for dark surfaces), and black. The icon ships only its
-default-colour favicons (512, 192, 180, and 32px).
+Colour variants can be produced at build time rather than as separate files by
+swapping that `<style>` block via the per-output `colors` map in `assets.toml`,
+but the lockup currently ships only the full-colour PNG (`#264583` square and
+wordmark). The icon likewise ships only its default-colour favicons (512, 192,
+180, and 32px).
 
 ## Updating the logo
 
