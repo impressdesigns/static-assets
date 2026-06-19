@@ -39,7 +39,8 @@ def clean_dist() -> None:
     we only ever delete the orchestrator-computed ``dist`` directory, never a
     path that the manifest could influence.
     """
-    assert DIST_DIR == REPO_ROOT / "dist", "refusing to clean unexpected path"
+    if DIST_DIR != REPO_ROOT / "dist":
+        raise SystemExit(f"refusing to clean unexpected path: {DIST_DIR}")
     if DIST_DIR.exists():
         for parent, dirs, files in DIST_DIR.walk(top_down=False):
             for name in files:
@@ -56,6 +57,18 @@ def ensure_within(path: Path, base: Path, label: str) -> Path:
     if not resolved.is_relative_to(base.resolve()):
         raise SystemExit(f"{label} path escapes {base}: {path}")
     return resolved
+
+
+def ensure_bare_filename(name: str, label: str) -> str:
+    """Confirm an output ``file`` is a plain filename (no directory, no traversal).
+
+    Per the manifest contract an output lands next to its copied source, so a
+    value like ``../index.json`` (which would resolve back inside ``dist/`` and
+    clobber a generated file) must be rejected.
+    """
+    if name in ("", ".", "..") or "/" in name or "\\" in name:
+        raise SystemExit(f"{label}: output file must be a bare filename, got {name!r}")
+    return name
 
 
 def group_for(rel_file: str) -> str:
@@ -88,6 +101,24 @@ def build_index() -> dict:
     # Group assets by folder while preserving manifest order for reproducibility.
     groups: dict[str, list[dict]] = {}
 
+    # Track every path we write under dist/ so two assets (or an output and a
+    # copied source) can't silently clobber each other. The generated indexes
+    # are reserved up front so no manifest entry can overwrite them.
+    claimed: dict[Path, str] = {
+        (DIST_DIR / "index.json").resolve(): "generated index.json",
+        (DIST_DIR / "index.html").resolve(): "generated index.html",
+    }
+
+    def claim(path: Path, label: str) -> Path:
+        resolved = ensure_within(path, DIST_DIR, label)
+        if resolved in claimed:
+            raise SystemExit(
+                f"output collision: {label} and {claimed[resolved]} both target "
+                f"{resolved.relative_to(DIST_DIR)}"
+            )
+        claimed[resolved] = label
+        return resolved
+
     for asset in manifest.get("asset", []):
         rel_file = asset["file"]
         src_path = ensure_within(SOURCE_DIR / rel_file, SOURCE_DIR, "source")
@@ -95,15 +126,18 @@ def build_index() -> dict:
             raise SystemExit(f"missing source asset: {rel_file}")
 
         # Copy the original verbatim to the same relative position in dist/.
-        dest_path = ensure_within(DIST_DIR / rel_file, DIST_DIR, "dist output")
+        dest_path = claim(DIST_DIR / rel_file, f"source copy {rel_file}")
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         src_path.copy(dest_path)  # pathlib.Path.copy (3.14+), replaces shutil.copy2
 
-        # Render each requested output alongside the copied original.
+        # Render each requested output alongside the copied original. `file` is a
+        # bare filename by contract, so an output always lands next to its source
+        # and can never traverse out of that directory.
         outputs: list[dict] = []
         for output in asset.get("output", []):
+            filename = ensure_bare_filename(output["file"], f"output of {rel_file}")
             spec = {key: value for key, value in output.items() if key != "file"}
-            out_path = ensure_within(dest_path.parent / output["file"], DIST_DIR, "dist output")
+            out_path = claim(dest_path.parent / filename, f"output {rel_file} -> {filename}")
             out_path.parent.mkdir(parents=True, exist_ok=True)
             render_output(src_path, out_path, spec)
             outputs.append({"file": out_path.relative_to(DIST_DIR).as_posix(), **spec})
@@ -143,6 +177,7 @@ def render_html(index: dict) -> str:
         "  </head>",
         "  <body>",
         f"    <h1>{_esc(index['name'])}</h1>",
+        '    <p><a href="index.json">/index.json</a></p>',
     ]
     for group in index["groups"]:
         lines.append(f"    <h2>{_esc(group['name'])}</h2>")

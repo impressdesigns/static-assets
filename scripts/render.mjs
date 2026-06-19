@@ -19,7 +19,24 @@
  * layer (e.g. the white variant drops the background square).
  */
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve, sep } from "node:path";
 import sharp from "sharp";
+
+// The renderer only reads sources and writes outputs inside this repository.
+// The argv paths are untrusted input, so resolve each against the repo root and
+// reject anything that escapes it — a stray or hostile argument must not read or
+// clobber files elsewhere on disk. The Python orchestrator validates paths too;
+// this is defence in depth.
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+function confinePath(value, label) {
+  const resolved = resolve(REPO_ROOT, value);
+  if (!resolved.startsWith(REPO_ROOT + sep)) {
+    throw new Error(`${label} escapes repository root: ${value}`);
+  }
+  return resolved;
+}
 
 // Replace the SVG's <style> block with target-specific fills. Swapping (rather
 // than appending) the block keeps CSS source order irrelevant.
@@ -61,13 +78,15 @@ async function render(inputPath, outputPath, spec) {
 }
 
 async function main() {
-  const [inputPath, outputPath, specJson] = process.argv.slice(2);
-  if (!inputPath || !outputPath || !specJson) {
+  const [inputArg, outputArg, specJson] = process.argv.slice(2);
+  if (!inputArg || !outputArg || !specJson) {
     throw new Error("Usage: node scripts/render.mjs <inputPath> <outputPath> <specJson>");
   }
+  const inputPath = confinePath(inputArg, "input path");
+  const outputPath = confinePath(outputArg, "output path");
   const spec = JSON.parse(specJson);
   await render(inputPath, outputPath, spec);
-  console.log(`✓ ${inputPath} → ${outputPath}`);
+  console.log(`✓ ${inputArg} → ${outputArg}`);
 }
 
 main().catch((err) => {
