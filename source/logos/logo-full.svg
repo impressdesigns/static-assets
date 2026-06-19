@@ -5,9 +5,9 @@
        directly. Consumers that inline this SVG can recolour any layer by
        setting the matching CSS custom property (e.g. --logo-wordmark) so the
        mark can follow a light/dark theme without shipping multiple files. */
-    .background { fill: var(--logo-square, #2b4287); }
+    .background { fill: var(--logo-square, #264583); }
     .monogram  { fill: var(--logo-monogram, #ffffff); }
-    .wordmark  { fill: var(--logo-wordmark, #2b4287); }
+    .wordmark  { fill: var(--logo-wordmark, #264583); }
   </style>
   <defs>
     <clipPath clipPathUnits="userSpaceOnUse" id="clipPath214">
