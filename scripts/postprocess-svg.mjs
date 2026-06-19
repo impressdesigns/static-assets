@@ -13,9 +13,10 @@
  *   node scripts/postprocess-svg.mjs --kind=icon icon.raw.svg      > source/icons/icon.svg
  *
  * What it does, in order:
- *   1. SVGO pass — keep the viewBox, fold transforms into coordinates, round
- *      coordinates, strip editor cruft (DOCTYPE, serif: namespace, comments,
- *      metadata). Never merges paths or distorts geometry.
+ *   1. SVGO — keep the viewBox, bake any export transforms into the path
+ *      coordinates (so the mark lands in viewBox space), round coordinates, and
+ *      strip editor cruft (DOCTYPE, serif: namespace, comments, metadata).
+ *      Never merges paths or distorts geometry.
  *   2. Tag each rendered shape with a semantic class:
  *        - white fill                         -> `monogram` (the "ID" knockout)
  *        - bbox spanning the viewBox height   -> `background` (the rounded square)
@@ -42,6 +43,14 @@ const WHITE = "#ffffff";
 // in both the square icon and the wide lockup (where it covers only ~22% of the
 // width), so height — not area — is the signal that works for both.
 const HEIGHT_COVERAGE = 0.85;
+
+// Give the output an explicit intrinsic size (longer side = this many px),
+// decoupled from the master's coordinate space. The build (scripts/render.mjs)
+// rasterizes at a high fixed density before downscaling; without a small
+// intrinsic size a large viewBox (e.g. 8092 units) would blow past sharp's pixel
+// limit. 512px keeps the high-density raster comfortably in range while staying
+// well above every output size for a crisp downscale.
+const INTRINSIC_MAX_PX = 512;
 
 // The default <style> blocks the renderer swaps at build time. They mirror the
 // committed sources exactly (full logo keeps the CSS-variable theming hooks; the
@@ -415,6 +424,25 @@ function stripSerifNamespace(svg) {
     .replace(/\s+serif:[\w-]+="[^"]*"/g, "");
 }
 
+// Set the <svg> width/height from the viewBox aspect, normalised so the longer
+// side is INTRINSIC_MAX_PX. Replaces any existing width/height so re-runs are a
+// fixed point. The viewBox (coordinate system) is untouched.
+function setIntrinsicSize(svg) {
+  const vb = /\bviewBox="([^"]+)"/.exec(svg);
+  if (!vb) return svg;
+  const nums = vb[1].trim().split(/[\s,]+/).map(Number);
+  if (nums.length !== 4 || !nums.every(Number.isFinite)) return svg;
+  const [, , w, h] = nums;
+  if (!(w > 0) || !(h > 0)) return svg;
+  const scale = INTRINSIC_MAX_PX / Math.max(w, h);
+  const width = +(w * scale).toFixed(3);
+  const height = +(h * scale).toFixed(3);
+  return svg.replace(/<svg\b([^>]*)>/, (_full, attrs) => {
+    const rest = attrs.replace(/\s+(?:width|height)="[^"]*"/g, "");
+    return `<svg width="${width}" height="${height}"${rest}>`;
+  });
+}
+
 // Replace any existing <style> block(s) with the canonical one, or insert it
 // right after the <svg> open tag. Using render.mjs's own swap regex shape keeps
 // this idempotent: a re-run finds the block we wrote and replaces it identically.
@@ -439,35 +467,57 @@ function main() {
     fail(`cannot read input SVG: ${input} (${err.code || err.message})`);
   }
 
-  let result;
+  // First SVGO pass: clean up and *bake transforms into coordinates*. Moving
+  // inline styles to attributes (convertStyleToAttrs) frees SVGO's applyTransforms,
+  // and multipass lets nested matrices collapse and then bake. Fills are kept on
+  // individual shapes (moveElemsAttrsToGroup off) so the classifier can read them.
+  let cleaned;
   try {
-    result = optimize(raw, {
+    cleaned = optimize(raw, {
       path: input,
-      multipass: false,
+      multipass: true,
       js2svg: { pretty: true, indent: 2 },
       plugins: [
+        "convertStyleToAttrs",
         {
           name: "preset-default",
           params: {
             overrides: {
               removeViewBox: false, // the rasterizer sizes off the viewBox
-              mergePaths: false, // never merge — it would break per-path classes
+              mergePaths: false, // never merge — it would break per-shape classes
               cleanupIds: false, // keep ids stable for clean diffs
               removeUselessStrokeAndFill: false, // keep fills so we can read them
               removeXMLProcInst: false, // keep <?xml?> to match the committed sources
+              moveElemsAttrsToGroup: false, // keep fills on shapes, not hoisted to <g>
+              inlineStyles: false, // leave the injected <style> intact on re-runs
             },
           },
         },
-        classifyPlugin(kind),
       ],
+    }).data;
+  } catch (err) {
+    fail(`SVGO failed to clean ${input}: ${err.message}`);
+  }
+
+  // Second pass: tag classes and strip fills. It must run after baking is
+  // complete — it rejects any surviving transform — so it can't share the
+  // multipass pipeline above.
+  let result;
+  try {
+    result = optimize(cleaned, {
+      path: input,
+      multipass: false,
+      js2svg: { pretty: true, indent: 2 },
+      plugins: [classifyPlugin(kind)],
     });
   } catch (err) {
-    fail(`SVGO failed to process ${input}: ${err.message}`);
+    fail(`SVGO failed to classify ${input}: ${err.message}`);
   }
 
   let out = result.data;
   out = stripSerifNamespace(out);
   out = injectStyle(out, kind);
+  out = setIntrinsicSize(out);
   out = out.replace(/\s+$/, "") + "\n";
   process.stdout.write(out);
 }
