@@ -1,4 +1,4 @@
-# Branding
+# Static Assets
 
 Static branding assets for Impress Designs (logos, icons, favicons).
 
@@ -48,7 +48,7 @@ wordmark). The icon likewise ships only its default-colour favicons (512, 192,
 
 The two SVGs under `source/` are generated from the brand master, not
 hand-authored. To refresh them after a logo change, follow
-[`RUNBOOK.md`](RUNBOOK.md): export the mark from the master, run it through
+[the SVG-refresh runbook](runbooks/refreshing-the-source-svgs.md): export the mark from the master, run it through
 `scripts/postprocess-svg.mjs` (which cleans the export and tags the recolourable
 `background` / `monogram` / `wordmark` classes), then rebuild.
 
