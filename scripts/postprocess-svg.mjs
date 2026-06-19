@@ -418,12 +418,6 @@ function classifyPlugin(kind) {
 
 // --- string-level cleanup / injection ---------------------------------------
 
-function stripSerifNamespace(svg) {
-  return svg
-    .replace(/\s+xmlns:serif="[^"]*"/g, "")
-    .replace(/\s+serif:[\w-]+="[^"]*"/g, "");
-}
-
 // Set the <svg> width/height from the viewBox aspect, normalised so the longer
 // side is INTRINSIC_MAX_PX. Replaces any existing width/height so re-runs are a
 // fixed point. The viewBox (coordinate system) is untouched.
@@ -443,18 +437,13 @@ function setIntrinsicSize(svg) {
   });
 }
 
-// Replace any existing <style> block(s) with the canonical one, or insert it
-// right after the <svg> open tag. Using render.mjs's own swap regex shape keeps
-// this idempotent: a re-run finds the block we wrote and replaces it identically.
+// Insert the canonical <style> block right after the <svg> open tag. SVGO's
+// removeStyleElement has already dropped any existing block, so this only inserts
+// — a single, complete string edit with nothing left to strip.
 function injectStyle(svg, kind) {
   const block = kind === "full" ? STYLE_FULL : STYLE_ICON;
-  // Drop any existing <style> block(s) whole-line so surrounding indentation is
-  // left intact, then re-insert the canonical block right after the <svg> tag.
-  let out = svg
-    .replace(/^[ \t]*<style[^>]*>[\s\S]*?<\/style>[ \t]*\r?\n/gm, "")
-    .replace(/[ \t]*<style[^>]*>[\s\S]*?<\/style>/g, "");
-  if (!/<svg\b[^>]*>/.test(out)) fail("no <svg> element in optimised output");
-  return out.replace(/(<svg\b[^>]*>)[ \t]*\r?\n?/, `$1\n${block}\n`);
+  if (!/<svg\b[^>]*>/.test(svg)) fail("no <svg> element in optimised output");
+  return svg.replace(/(<svg\b[^>]*>)[ \t]*\r?\n?/, `$1\n${block}\n`);
 }
 
 function main() {
@@ -489,10 +478,11 @@ function main() {
               removeUselessStrokeAndFill: false, // keep fills so we can read them
               removeXMLProcInst: false, // keep <?xml?> to match the committed sources
               moveElemsAttrsToGroup: false, // keep fills on shapes, not hoisted to <g>
-              inlineStyles: false, // leave the injected <style> intact on re-runs
+              inlineStyles: false, // don't fold CSS into shapes; we manage the block
             },
           },
         },
+        "removeStyleElement", // drop any <style> element; injectStyle re-adds ours
       ],
     }).data;
   } catch (err) {
@@ -515,7 +505,6 @@ function main() {
   }
 
   let out = result.data;
-  out = stripSerifNamespace(out);
   out = injectStyle(out, kind);
   out = setIntrinsicSize(out);
   out = out.replace(/\s+$/, "") + "\n";
