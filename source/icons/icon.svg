@@ -1,23 +1,12 @@
-<?xml version="1.0"?>
-<svg width="14.693894mm" height="14.693903mm" viewBox="0 0 14.693894 14.693903" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 2209 2209">
   <style>
-    .background { fill: #2b4287; }
+    .background { fill: #264583; }
     .monogram  { fill: #ffffff; }
   </style>
-  <defs>
-    <clipPath clipPathUnits="userSpaceOnUse" id="clipPath260">
-      <path d="m 117.301,624.082 v -0.047 c 0,-3.808 -2.639,-6.895 -5.902,-6.895 v 0 -26.066 h 7.15 c 0.084,25.762 10.727,24.858 10.727,24.858 v 0 8.15 z"></path>
-    </clipPath>
-    <clipPath clipPathUnits="userSpaceOnUse" id="clipPath264-0">
-      <path d="m 92.381,624.082 v -8.15 c 0,0 10.636,0.904 10.719,-24.858 v 0 h 7.151 v 26.066 c -3.261,0 -5.901,3.087 -5.901,6.895 v 0 c 0,0.014 0.002,0.033 0.002,0.047 v 0 z"></path>
-    </clipPath>
-    <clipPath clipPathUnits="userSpaceOnUse" id="clipPath256-4">
-      <path d="m 95.268,628.409 c -2.906,0 -5.268,-2.367 -5.268,-5.268 v 0 -31.122 c 0,-2.905 2.362,-5.263 5.268,-5.263 v 0 h 31.117 c 2.903,0 5.267,2.358 5.267,5.263 v 0 21.982 9.14 c 0,2.901 -2.364,5.268 -5.267,5.268 v 0 z"></path>
-    </clipPath>
-  </defs>
-  <g transform="translate(-97.631251,-141.02291)">
-    <path class="background" d="m 90,628.409 h 41.652 V 586.757 H 90 Z" transform="matrix(0.35277776,0,0,-0.35277776,65.88125,362.71164)" clip-path="url(#clipPath256-4)"></path>
-    <path class="monogram" d="m 111.399,624.082 h 17.877 v -33.007 h -17.877 z" transform="matrix(0.35277776,0,0,-0.35277776,65.88125,362.71164)" clip-path="url(#clipPath260)"></path>
-    <path class="monogram" d="m 92.381,624.082 h 17.87 v -33.007 h -17.87 z" transform="matrix(0.35277776,0,0,-0.35277776,65.88125,362.71164)" clip-path="url(#clipPath264-0)"></path>
+  <g id="Monogram">
+    <path fill-rule="nonzero" d="M1447.567 231.889c0 201.925-139.901 365.618-312.894 365.618v1382.086h379.104c4.478-1365.946 568.775-1318.079 568.775-1318.079v-432.09h-634.986v2.466Z" class="monogram"/>
+    <path fill-rule="nonzero" d="M760.866 231.889c0-.729.121-1.737.121-2.466H126.243v432.09s563.935-47.867 568.38 1318.079h379.138V597.506c-172.894 0-312.894-163.693-312.894-365.618" class="monogram"/>
+    <path fill-rule="nonzero" d="M2082.548 661.522s-564.298-47.883-568.775 1318.079h-379.1V597.515c172.993 0 312.89-163.693 312.89-365.618v-2.466h634.986zM1073.756 1979.601H694.618c-4.444-1365.962-568.38-1318.079-568.38-1318.079v-432.09h634.761c0 .729-.137 1.72-.137 2.466 0 201.925 140.001 365.618 312.894 365.618v1382.086ZM1929.268 0H279.293C125.251 0-.001 125.493-.001 279.277v1650.2c0 154.063 125.252 279.069 279.294 279.069h1649.975c153.888 0 279.298-125.006 279.298-279.069v-1650.2C2208.566 125.493 2083.156 0 1929.268 0" class="background"/>
   </g>
 </svg>

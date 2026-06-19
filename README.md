@@ -36,10 +36,22 @@ are tagged with semantic classes — `background` (rounded square), `monogram`
 (the "ID" mark), and `wordmark` (the text + ®) — and a default `<style>` block
 renders the full-colour version when the file is viewed directly.
 
+The entire wordmark — IMPRESS, DESIGNS, and the ® — is a single colour.
+
 Colour variants are produced at build time rather than as separate files: the
 renderer swaps that `<style>` block using the per-output `colors` map in
-`assets.toml`, so e.g. the white variant recolours every layer to white and sets
-`background` to `none` to drop the square.
+`assets.toml`. The full lockup ships in three variants — colour (`#264583` square
+and wordmark), white (every layer white with `background` set to `none` to drop
+the square, for dark surfaces), and black — and the icon adds matching white and
+black variants alongside its default-colour favicons.
+
+## Updating the logo
+
+The two SVGs under `source/` are generated from the brand master, not
+hand-authored. To refresh them after a logo change, follow
+[`RUNBOOK.md`](RUNBOOK.md): export the mark from the master, run it through
+`scripts/postprocess-svg.mjs` (which cleans the export and tags the recolourable
+`background` / `monogram` / `wordmark` classes), then rebuild.
 
 ## Build
 

@@ -42,6 +42,22 @@ file = "icons/icon.svg"
   height = 32
   file = "favicon-32.png"
 
+  # Reversed icon for dark surfaces: drop the square, keep the white monogram.
+  [[asset.output]]
+  format = "png"
+  width = 512
+  height = 512
+  file = "icon-512-white.png"
+  colors = { background = "none", monogram = "#ffffff" }
+
+  # Black icon to match the brand guide's black lockup.
+  [[asset.output]]
+  format = "png"
+  width = 512
+  height = 512
+  file = "icon-512-black.png"
+  colors = { background = "#000000", monogram = "#ffffff" }
+
 [[asset]]
 name = "Full logo lockup"
 description = "Full ID wordmark lockup. Colour variants recolour the background, monogram, and wordmark layers at build time."
@@ -50,11 +66,17 @@ file = "logos/logo-full.svg"
   [[asset.output]]
   format = "png"
   width = 491
-  file = "logo-full-dark.png"
-  colors = { background = "#2b4287", monogram = "#ffffff", wordmark = "#2b4287" }
+  file = "logo-full-color.png"
+  colors = { background = "#264583", monogram = "#ffffff", wordmark = "#264583" }
 
   [[asset.output]]
   format = "png"
   width = 491
   file = "logo-full-white.png"
   colors = { background = "none", monogram = "#ffffff", wordmark = "#ffffff" }
+
+  [[asset.output]]
+  format = "png"
+  width = 491
+  file = "logo-full-black.png"
+  colors = { background = "#000000", monogram = "#ffffff", wordmark = "#000000" }
