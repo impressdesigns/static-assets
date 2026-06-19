@@ -40,7 +40,7 @@ file = "icons/icon.svg"
   format = "png"
   width = 32
   height = 32
-  file = "favicon-32.png"
+  file = "icon-32.png"
 
   # Reversed icon for dark surfaces: drop the square, keep the white monogram.
   [[asset.output]]
