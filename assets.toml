@@ -52,3 +52,8 @@ file = "logos/logo-full.svg"
   width = 491
   file = "logo-full-color.png"
   colors = { background = "#264583", monogram = "#ffffff", wordmark = "#264583" }
+
+[[asset]]
+name = "Brand stylesheet"
+description = "Brand design tokens as CSS custom properties (e.g. the brand blue). Copied verbatim with no render step."
+file = "stylesheets/brand.css"
