@@ -5,9 +5,12 @@
   "description": "Static brand assets for Impress Designs — source SVGs built into production assets.",
   "type": "module",
   "scripts": {
-    "build": "python3 scripts/build.py"
+    "build": "npm run build:assets && npm run build:site",
+    "build:assets": "python3 scripts/build.py",
+    "build:site": "eleventy"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^3.1.6",
     "sharp": "^0.35.1",
     "svgo": "^4.0.1"
   }

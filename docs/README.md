@@ -21,9 +21,11 @@ and recreates `dist/`, and for each asset:
    renderer `scripts/render.mjs`, which owns the image tooling
    ([sharp](https://sharp.pixelplumbing.com/)).
 
-It assembles a single index of everything produced, writes it to
-`dist/index.json` for machine consumers, and renders `dist/index.html` from that
-same structure so the two never drift.
+It assembles a single index of everything produced and writes it to
+`dist/index.json` for machine consumers. The human-facing homepage
+(`dist/index.html`) is rendered separately by [Eleventy](https://www.11ty.dev/)
+from that same JSON — see `eleventy.config.js` and the template in `src/` — so
+the two never drift.
 
 The output schema in `assets.toml` is intentionally loose — keys under
 `[[asset.output]]` are forwarded as JSON to the renderer. An asset with no
@@ -55,9 +57,17 @@ hand-authored. To refresh them after a logo change, follow
 ## Build
 
 ```sh
-npm install          # installs sharp, used by the Node renderer
-npm run build        # python3 scripts/build.py → dist/
+npm install          # installs sharp (Node renderer) and Eleventy
+npm run build        # build:assets (python3 scripts/build.py) then build:site (eleventy)
 ```
 
-The build needs both **Node** (for `scripts/render.mjs` + sharp) and **Python
-3.14+** (the orchestrator uses `tomllib` and `pathlib.Path.copy`).
+`npm run build` runs two stages in order:
+
+1. `build:assets` — `python3 scripts/build.py` copies/renders every asset into
+   `dist/` and writes `dist/index.json`.
+2. `build:site` — `eleventy` renders the homepage `dist/index.html` from that
+   `dist/index.json`. (It reads `dist/index.json`, so always run `build:assets`
+   first; `npx @11ty/eleventy --serve` likewise needs a prior `build:assets`.)
+
+The build needs both **Node** (for `scripts/render.mjs` + sharp, and Eleventy)
+and **Python 3.14+** (the orchestrator uses `tomllib` and `pathlib.Path.copy`).
