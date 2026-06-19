@@ -8,14 +8,14 @@ manifest of every source asset and its requested outputs), then for each asset:
 * renders each requested output alongside that copy by shelling out to the Node
   renderer (``scripts/render.mjs``), which owns all image tooling (sharp).
 
-It also assembles a single in-memory index of everything produced, writes it to
-``dist/index.json`` for machine consumers, and renders ``dist/index.html`` from
-that *same* structure so the two artifacts can never drift.
+It also assembles a single in-memory index of everything produced and writes it
+to ``dist/index.json`` for machine consumers. The human-facing homepage
+(``dist/index.html``) is rendered separately by Eleventy from that *same* JSON
+(see ``eleventy.config.js``), so the two artifacts can never drift.
 
 Requires Python 3.14+ (uses ``pathlib.Path.copy``).
 """
 
-import html
 import json
 import subprocess
 import sys
@@ -102,11 +102,12 @@ def build_index() -> dict:
     groups: dict[str, list[dict]] = {}
 
     # Track every path we write under dist/ so two assets (or an output and a
-    # copied source) can't silently clobber each other. The generated indexes
-    # are reserved up front so no manifest entry can overwrite them.
+    # copied source) can't silently clobber each other. index.json (written
+    # here) and index.html (rendered post-build by Eleventy from that JSON) are
+    # reserved up front so no manifest entry can occupy or overwrite either path.
     claimed: dict[Path, str] = {
         (DIST_DIR / "index.json").resolve(): "generated index.json",
-        (DIST_DIR / "index.html").resolve(): "generated index.html",
+        (DIST_DIR / "index.html").resolve(): "index.html (rendered by Eleventy)",
     }
 
     def claim(path: Path, label: str) -> Path:
@@ -157,76 +158,16 @@ def build_index() -> dict:
     }
 
 
-def _esc(value: object) -> str:
-    return html.escape(str(value), quote=True)
-
-
-def _colors_text(colors: dict) -> str:
-    return "; ".join(f"{cls}: {fill}" for cls, fill in colors.items())
-
-
-def render_html(index: dict) -> str:
-    """Render the human-facing index page from the same dict as index.json."""
-    lines = [
-        "<!doctype html>",
-        '<html lang="en">',
-        "  <head>",
-        '    <meta charset="utf-8" />',
-        '    <meta name="viewport" content="width=device-width, initial-scale=1" />',
-        f"    <title>{_esc(index['name'])}</title>",
-        "  </head>",
-        "  <body>",
-        f"    <h1>{_esc(index['name'])}</h1>",
-        '    <p><a href="index.json">/index.json</a></p>',
-    ]
-    for group in index["groups"]:
-        lines.append(f"    <h2>{_esc(group['name'])}</h2>")
-        for asset in group["assets"]:
-            source = _esc(asset["source"])
-            lines.append(f"    <h3>{_esc(asset['name'])}</h3>")
-            lines.append(f"    <p>{_esc(asset['description'])}</p>")
-            lines.append(f'    <p>Source: <a href="{source}"><code>{source}</code></a></p>')
-            if not asset["outputs"]:
-                lines.append("    <p>Copied verbatim (no transformations).</p>")
-                continue
-            lines.append("    <table>")
-            lines.append("      <thead>")
-            lines.append(
-                "        <tr><th>Output</th><th>Format</th><th>Width</th>"
-                "<th>Height</th><th>Colours</th></tr>"
-            )
-            lines.append("      </thead>")
-            lines.append("      <tbody>")
-            for output in asset["outputs"]:
-                href = _esc(output["file"])
-                name = _esc(Path(output["file"]).name)
-                fmt = _esc(output.get("format", "—"))
-                width = _esc(output.get("width", "—"))
-                height = _esc(output.get("height", "—"))
-                colours = output.get("colors")
-                colours_cell = _esc(_colors_text(colours)) if colours else "—"
-                lines.append(
-                    f'        <tr><td><a href="{href}">{name}</a></td>'
-                    f"<td>{fmt}</td><td>{width}</td><td>{height}</td>"
-                    f"<td>{colours_cell}</td></tr>"
-                )
-            lines.append("      </tbody>")
-            lines.append("    </table>")
-    lines.append("  </body>")
-    lines.append("</html>")
-    return "\n".join(lines) + "\n"
-
-
 def main() -> None:
     clean_dist()
     index = build_index()
 
-    # Build the full index first, then serialize both artifacts from it so the
-    # machine-readable JSON and the HTML page can never drift out of sync.
+    # Build the full index first, then write it as JSON. Eleventy renders the
+    # human-facing homepage from this same file (see eleventy.config.js), so the
+    # JSON stays the single source of truth for both consumers and can't drift.
     (DIST_DIR / "index.json").write_text(
         json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    (DIST_DIR / "index.html").write_text(render_html(index), encoding="utf-8")
 
     total = sum(len(asset["outputs"]) for group in index["groups"] for asset in group["assets"])
     print(f"✓ dist/ ← {total} output(s) across {len(index['groups'])} group(s)")

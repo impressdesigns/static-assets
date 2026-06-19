@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ catalog.name }}</title>
+    <link rel="stylesheet" href="styles/home.css" />
+  </head>
+  <body>
+    <main>
+      <h1>{{ catalog.name }}</h1>
+      <p><a href="index.json">/index.json</a></p>
+      {% for group in catalog.groups %}
+      <section>
+        <h2>{{ group.name }}</h2>
+        {% for asset in group.assets %}
+        <article>
+          <h3>{{ asset.name }}</h3>
+          <p>{{ asset.description }}</p>
+          <p>Source: <a href="{{ asset.source }}"><code>{{ asset.source }}</code></a></p>
+          {% if asset.outputs | length %}
+          <table>
+            <thead>
+              <tr><th>Output</th><th>Format</th><th>Width</th><th>Height</th><th>Colours</th></tr>
+            </thead>
+            <tbody>
+              {% for output in asset.outputs %}
+              <tr>
+                <td><a href="{{ output.file }}">{{ output.file | basename }}</a></td>
+                <td>{{ output.format | default("—") }}</td>
+                <td>{{ output.width | default("—") }}</td>
+                <td>{{ output.height | default("—") }}</td>
+                <td>{% if output.colors | length %}{{ output.colors | coloursText }}{% else %}—{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p>Copied verbatim (no transformations).</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </section>
+      {% endfor %}
+    </main>
+  </body>
+</html>

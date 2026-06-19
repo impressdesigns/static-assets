@@ -1,0 +1,98 @@
+/* Homepage styling for the static-assets catalog.
+ * Pulls in the brand tokens (source/stylesheets/brand.css, copied to
+ * dist/stylesheets/) so the page consumes the real brand blue instead of
+ * hard-coding the hex — exactly what that stylesheet asks consumers to do. */
+@import url("../stylesheets/brand.css");
+
+:root {
+  --page-width: 50rem;
+  --ink: #1c2230;
+  --rule: #e3e6ec;
+  --surface: #f6f7f9;
+  --chip: #eceef2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+main {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+a {
+  color: var(--color-brand-blue);
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--color-brand-blue);
+  color: var(--color-brand-blue);
+  font-size: 1.9rem;
+}
+
+h2 {
+  margin: 2.5rem 0 0;
+  color: var(--color-brand-blue);
+  font-size: 1.3rem;
+}
+
+h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+}
+
+article {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+article p {
+  margin: 0.25rem 0;
+}
+
+code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--chip);
+  font-size: 0.9em;
+}
+
+table {
+  width: 100%;
+  margin: 0.85rem 0 0.25rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+thead th {
+  background: var(--color-brand-blue);
+  color: #fff;
+  font-weight: 600;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody td:first-child {
+  font-variant-numeric: tabular-nums;
+}
