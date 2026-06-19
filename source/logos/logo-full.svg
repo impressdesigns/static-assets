@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <svg version="1.1" width="250.68896" height="55.536514" viewBox="0 0 250.68896 55.536514" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .background { fill: #2b4287; }
-    .monogram  { fill: #ffffff; }
-    .wordmark  { fill: #2b4287; }
+    /* Default fills render the full-colour lockup when the file is viewed
+       directly. Consumers that inline this SVG can recolour any layer by
+       setting the matching CSS custom property (e.g. --logo-wordmark) so the
+       mark can follow a light/dark theme without shipping multiple files. */
+    .background { fill: var(--logo-square, #2b4287); }
+    .monogram  { fill: var(--logo-monogram, #ffffff); }
+    .wordmark  { fill: var(--logo-wordmark, #2b4287); }
   </style>
   <defs>
     <clipPath clipPathUnits="userSpaceOnUse" id="clipPath214">
