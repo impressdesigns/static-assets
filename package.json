@@ -1,8 +1,8 @@
 {
-  "name": "@impressdesigns/branding",
+  "name": "@impressdesigns/static-assets",
   "version": "0.0.0",
   "private": true,
-  "description": "Impress Designs company branding.",
+  "description": "Static brand assets for Impress Designs — source SVGs built into production assets.",
   "type": "module",
   "scripts": {
     "build": "python3 scripts/build.py"

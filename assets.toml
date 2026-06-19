@@ -1,4 +1,4 @@
-# assets.toml — declarative manifest for the branding build.
+# assets.toml — declarative manifest for the static-assets build.
 #
 # Each [[asset]] names a source file under source/. The orchestrator
 # (scripts/build.py) copies it verbatim into dist/ at the same relative path,
