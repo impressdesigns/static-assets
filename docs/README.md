@@ -9,7 +9,7 @@ Static branding assets for Impress Designs (logos, icons, favicons).
   description, and the outputs to generate from it.
 - `dist/` — the **build output** (copied sources, generated PNGs, `index.html`,
   and `index.json`). It is not tracked in git (see `.gitignore`); CI regenerates
-  and publishes it to GitHub Pages.
+  and syncs it to a Cloudflare R2 bucket.
 
 ## How the build works
 
