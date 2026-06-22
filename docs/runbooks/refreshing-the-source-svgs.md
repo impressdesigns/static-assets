@@ -111,8 +111,8 @@ Then spot-check `dist/`:
   tightened in Step 1b.
 
 Commit the two `source/*.svg` files. CI
-(`.github/workflows/build-publish.yaml`) rebuilds `dist/` and publishes to GitHub
-Pages on push to `main`; `dist/` itself is gitignored.
+(`.github/workflows/build-publish.yaml`) rebuilds `dist/` and syncs it to a
+Cloudflare R2 bucket on push to `main`; `dist/` itself is gitignored.
 
 ---
 
