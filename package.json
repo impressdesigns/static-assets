@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
-    "sharp": "^0.35.2",
-    "svgo": "^4.0.1"
+    "sharp": "^0.35.3",
+    "svgo": "^4.0.2"
   }
 }
